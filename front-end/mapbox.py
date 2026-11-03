@@ -12,7 +12,7 @@ from tollstation_analysis import (
     select_roads,
 )
 
-GOOGLE_MAPS_API_KEY = "AIzaSyDPCKyfBNEDqAJwjdXp59PFH1utR4JBaJ0"
+GOOGLE_MAPS_API_KEY = ""
 
 tollstations_df = pd.read_csv("../shared/tollstations2024.csv")
 
