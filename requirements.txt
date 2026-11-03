@@ -1,0 +1,42 @@
+# frontend dependencies
+streamlit
+streamlit-folium
+plotly
+
+# data preprocessing
+pandas
+numpy
+scikit-learn
+
+# data visualization
+matplotlib
+seaborn
+pillow
+streamlit-highcharts
+
+# requests api
+requests_cache
+retry_requests
+types-requests
+
+# api
+Flask==2.2.5
+pymongo[srv]
+Flask-PyMongo
+flask-swagger-ui
+requests
+
+# database
+flask-mongoengine
+
+# scheduler
+schedule
+secure-smtplib
+openpyxl
+
+# testing
+pre-commit
+mongomock
+pytest==8.2.2
+pytest-cov
+Werkzeug==2.2.3

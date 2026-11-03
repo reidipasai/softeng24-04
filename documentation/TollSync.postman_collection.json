@@ -1,0 +1,371 @@
+{
+	"info": {
+		"_postman_id": "1db980bd-9f73-4210-9f5c-b454e5a2b8f8",
+		"name": "TollSync",
+		"description": "Interoperable Data Hub for Highway Networks",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "41970023",
+		"_collection_link": "https://softeng2404.postman.co/workspace/0e6eaca8-13ed-4a7a-8b76-56128863bd58/collection/41970023-1db980bd-9f73-4210-9f5c-b454e5a2b8f8?action=share&source=collection_link&creator=41970023"
+	},
+	"item": [
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Save response body to a variable\", function () {\r",
+							"    var responseBody = pm.response.json();\r",
+							"    console.log(responseBody)\r",
+							"    pm.collectionVariables.set(\"token\", responseBody.token);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"{{username}}\",\n    \"password\": \"{{password}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/login",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"login"
+					]
+				},
+				"description": "Authenticates a user and returns a token for further API requests. Requires a username and password.  \n**Endpoint:** `POST /api/login`"
+			},
+			"response": []
+		},
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-OBSERVATORY-AUTH",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"dummy_username\",\n    \"password\": \"dummy_password\",\n    \"role\": \"Employee\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/register",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"register"
+					]
+				},
+				"description": "Registers a new user in the system. Requires a username, password, and role (Admin or Employee).  \n**Endpoint:** `POST /api/register`  \n**Authorization:** Requires Admin privileges."
+			},
+			"response": []
+		},
+		{
+			"name": "healthcheck",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-OBSERVATORY-AUTH",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/admin/healthcheck",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"healthcheck"
+					]
+				},
+				"description": "Performs a system health check and returns database information.  \n**Endpoint:** `GET /api/admin/healthcheck`  \n**Authorization:** Requires Admin privileges."
+			},
+			"response": []
+		},
+		{
+			"name": "resetstations",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-OBSERVATORY-AUTH",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"OpID\": \"AM\",\n    \"Operator\": \"aegeanmotorway\",\n    \"TollID\": \"AM01\",\n    \"Name\": \"Σταθμός Διοδίων Κλειδίου Μετωπικά (Προς Αθήνα)\",\n    \"PM\": \"ΜΤ\",\n    \"Locality\": \"Ημαθίας-Κλειδί\",\n    \"Road\": \"Α/Δ Αθηνών-Θεσσαλονίκης\",\n    \"Lat\": 40.51974,\n    \"Long\": 22.57247,\n    \"Email\": \"customercare@aegeanmotorway.gr\",\n    \"Price1\": 1.40,\n    \"Price2\": 2.00,\n    \"Price3\": 5.90,\n    \"Price4\": 8.30\n  },\n  {\n    \"OpID\": \"AM\",\n    \"Operator\": \"aegeanmotorway\",\n    \"TollID\": \"AM02\",\n    \"Name\": \"Σταθμός Διοδίων Κλειδίου Μετωπικά (Προς Θεσσαλονίκη)\",\n    \"PM\": \"ΜΤ\",\n    \"Locality\": \"Ημαθίας-Κλειδί\",\n    \"Road\": \"Α/Δ Αθηνών-Θεσσαλονίκης\",\n    \"Lat\": 40.51943,\n    \"Long\": 22.57290,\n    \"Email\": \"customercare@aegeanmotorway.gr\",\n    \"Price1\": 1.40,\n    \"Price2\": 2.00,\n    \"Price3\": 5.90,\n    \"Price4\": 8.30\n  },\n  {\n    \"OpID\": \"AM\",\n    \"Operator\": \"aegeanmotorway\",\n    \"TollID\": \"AM03\",\n    \"Name\": \"Σταθμός Διοδίων Μακρυχωρίου Μετωπικά (Προς Αθήνα)\",\n    \"PM\": \"ΜΤ\",\n    \"Locality\": \"Λάρισας-Μακρυχώρι\",\n    \"Road\": \"Α/Δ Αθηνών-Θεσσαλονίκης\",\n    \"Lat\": 39.80461,\n    \"Long\": 22.50252,\n    \"Email\": \"customercare@aegeanmotorway.gr\",\n    \"Price1\": 1.60,\n    \"Price2\": 2.20,\n    \"Price3\": 6.80,\n    \"Price4\": 9.60\n  },\n  {\n    \"OpID\": \"AM\",\n    \"Operator\": \"aegeanmotorway\",\n    \"TollID\": \"AM04\",\n    \"Name\": \"Σταθμός Διοδίων Μακρυχωρίου Μετωπικά (Προς Θεσσαλονίκη)\",\n    \"PM\": \"ΜΤ\",\n    \"Locality\": \"Λάρισας-Μακρυχώρι\",\n    \"Road\": \"Α/Δ Αθηνών-Θεσσαλονίκης\",\n    \"Lat\": 39.80427,\n    \"Long\": 22.50270,\n    \"Email\": \"customercare@aegeanmotorway.gr\",\n    \"Price1\": 1.60,\n    \"Price2\": 2.20,\n    \"Price3\": 6.80,\n    \"Price4\": 9.60\n  },\n  {\n    \"OpID\": \"AM\",\n    \"Operator\": \"aegeanmotorway\",\n    \"TollID\": \"AM05\",\n    \"Name\": \"Σταθμός Διοδίων Μοσχοχωρίου Μετωπικά (Προς Αθήνα)\",\n    \"PM\": \"ΜΤ\",\n    \"Locality\": \"Λάρισας-Μοσχοχώρι\",\n    \"Road\": \"Α/Δ Αθηνών-Θεσσαλονίκης\",\n    \"Lat\": 39.52294,\n    \"Long\": 22.55670,\n    \"Email\": \"customercare@aegeanmotorway.gr\",\n    \"Price1\": 2.50,\n    \"Price2\": 3.60,\n    \"Price3\": 10.80,\n    \"Price4\": 15.10\n  },\n  {\n    \"OpID\": \"AM\",\n    \"Operator\": \"aegeanmotorway\",\n    \"TollID\": \"AM06\",\n    \"Name\": \"Σταθμός Διοδίων Μοσχοχωρίου Μετωπικά (Προς Θεσσαλονίκη)\",\n    \"PM\": \"ΜΤ\",\n    \"Locality\": \"Λάρισας-Μοσχοχώρι\",\n    \"Road\": \"Α/Δ Αθηνών-Θεσσαλονίκης\",\n    \"Lat\": 39.52292,\n    \"Long\": 22.55705,\n    \"Email\": \"customercare@aegeanmotorway.gr\",\n    \"Price1\": 2.50,\n    \"Price2\": 3.60,\n    \"Price3\": 10.80,\n    \"Price4\": 15.10\n  }\n]\n",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/admin/resetstations",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"resetstations"
+					]
+				},
+				"description": "Deletes all toll station records and repopulates them with updated data.  \n**Endpoint:** `POST /api/admin/resetstations`  \n**Authorization:** Requires Admin privileges."
+			},
+			"response": []
+		},
+		{
+			"name": "resetpasses",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-OBSERVATORY-AUTH",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/admin/resetpasses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"resetpasses"
+					]
+				},
+				"description": "Deletes all existing pass records from the database.  \n**Endpoint:** `POST /api/admin/resetpasses`  \n**Authorization:** Requires Admin privileges."
+			},
+			"response": []
+		},
+		{
+			"name": "addpasses",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-OBSERVATORY-AUTH",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"timestamp\": \"2022-01-01 00:29\",\n    \"tollID\": \"KO09\",\n    \"tagRef\": \"NOXFGCAQV\",\n    \"tagHomeID\": \"NO\",\n    \"charge\": 2.05\n  },\n  {\n    \"timestamp\": \"2022-01-01 01:07\",\n    \"tollID\": \"AM03\",\n    \"tagRef\": \"AMLJH75LX\",\n    \"tagHomeID\": \"AM\",\n    \"charge\": 2.2\n  },\n  {\n    \"timestamp\": \"2022-01-01 01:25\",\n    \"tollID\": \"NO09\",\n    \"tagRef\": \"NORCBPLJD\",\n    \"tagHomeID\": \"NO\",\n    \"charge\": 4.2\n  },\n  {\n    \"timestamp\": \"2022-01-01 01:26\",\n    \"tollID\": \"EG29\",\n    \"tagRef\": \"EGF1T2TAL\",\n    \"tagHomeID\": \"EG\",\n    \"charge\": 1.5\n  },\n  {\n    \"timestamp\": \"2022-01-01 01:33\",\n    \"tollID\": \"NO09\",\n    \"tagRef\": \"EGRHOCN9J\",\n    \"tagHomeID\": \"EG\",\n    \"charge\": 4.2\n  },\n  {\n    \"timestamp\": \"2022-01-01 01:51\",\n    \"tollID\": \"AM08\",\n    \"tagRef\": \"AMXAJI0Y6\",\n    \"tagHomeID\": \"AM\",\n    \"charge\": 2.8\n  },\n  {\n    \"timestamp\": \"2022-01-01 03:04\",\n    \"tollID\": \"NAO15\",\n    \"tagRef\": \"NAO09SKDGI\",\n    \"tagHomeID\": \"NAO\",\n    \"charge\": 2.5\n  },\n  {\n    \"timestamp\": \"2022-01-01 03:47\",\n    \"tollID\": \"NO10\",\n    \"tagRef\": \"NOXFGCAQV\",\n    \"tagHomeID\": \"NO\",\n    \"charge\": 4.2\n  },\n  {\n    \"timestamp\": \"2022-01-01 04:01\",\n    \"tollID\": \"NAO18\",\n    \"tagRef\": \"NAO5ZJA8DZ\",\n    \"tagHomeID\": \"NAO\",\n    \"charge\": 2.5\n  },\n  {\n    \"timestamp\": \"2022-01-01 04:11\",\n    \"tollID\": \"NAO10\",\n    \"tagRef\": \"EGSEIMVIH\",\n    \"tagHomeID\": \"EG\",\n    \"charge\": 2.5\n  },\n  {\n    \"timestamp\": \"2022-01-01 04:39\",\n    \"tollID\": \"KO05\",\n    \"tagRef\": \"OO7PZE9VI\",\n    \"tagHomeID\": \"OO\",\n    \"charge\": 1.9\n  }\n]\n",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/api/admin/addpasses",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"admin",
+						"addpasses"
+					]
+				},
+				"description": "Adds new pass records to the database, including timestamp, toll station ID, tag reference, home ID, and charge amount.  \n**Endpoint:** `POST /api/admin/addpasses`  \n**Authorization:** Requires Admin privileges."
+			},
+			"response": []
+		},
+		{
+			"name": "chargesBy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/chargesBy/KO/20220101/20220115",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"chargesBy",
+						"KO",
+						"20220101",
+						"20220115"
+					]
+				},
+				"description": "Retrieves data on toll charges for a specific toll operator, showing which operators owe money based on the recorded passes. Requires the operator ID and a date range.  \n**Endpoint:** `GET /api/chargesBy/{operator}/{fromDate}/{toDate}`  \n**Response Format:** JSON or CSV."
+			},
+			"response": []
+		},
+		{
+			"name": "passAnalysis",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/passAnalysis/KO/OO/20220101/20220115",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"passAnalysis",
+						"KO",
+						"OO",
+						"20220101",
+						"20220115"
+					]
+				},
+				"description": "Provides aggregated data on toll passes based on station and tag operator IDs within a given period.  \n**Endpoint:** `GET /api/passAnalysis/{stationOp}/{tagOp}/{fromDate}/{toDate}`  \n**Response Format:** JSON or CSV."
+			},
+			"response": []
+		},
+		{
+			"name": "tollStationPasses",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/tollStationPasses/AM03/20220101/20220130",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"tollStationPasses",
+						"AM03",
+						"20220101",
+						"20220130"
+					]
+				},
+				"description": "Returns data on passes through a specific toll station within a given period.  \n**Endpoint:** `GET /api/tollStationPasses/{station}/{fromDate}/{toDate}`  \n**Response Format:** JSON or CSV."
+			},
+			"response": []
+		},
+		{
+			"name": "passesCost",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/api/passesCost/KO/OO/20220101/20220115",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"passesCost",
+						"KO",
+						"OO",
+						"20220101",
+						"20220115"
+					]
+				},
+				"description": "Fetches cost-related details of toll passes from a specified station operator and tag operator within a timeframe.  \n**Endpoint:** `GET /api/passesCost/{stationOp}/{tagOp}/{fromDate}/{toDate}`  \n**Response Format:** JSON or CSV."
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-OBSERVATORY-AUTH",
+						"value": "{{token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/api/logout",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"api",
+						"logout"
+					]
+				},
+				"description": "Logs out the currently authenticated user.  \n**Endpoint:** `POST /api/logout`  \n**Authorization:** Requires a valid authentication token."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://127.0.0.1:9115",
+			"type": "string"
+		},
+		{
+			"key": "username",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "freepasses4all",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

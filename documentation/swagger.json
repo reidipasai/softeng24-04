@@ -1,0 +1,1482 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "TollSync - OpenAPI 3.0",
+    "description": "Interoperable Data Hub for Highway Networks",
+    "contact": {
+      "email": "spirosmag@ieee.org"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "0.0.1"
+  },
+  "externalDocs": {
+    "description": "Find out more about TollSync",
+    "url": "http://github.com/ntua/softeng24-04/README.md"
+  },
+  "tags": [
+    {
+      "name": "admin",
+      "description": "Every admin operation"
+    },
+    {
+      "name": "login system",
+      "description": "register/login/logout operations"
+    },
+    {
+      "name": "toll/passes analysis",
+      "description": "Operations with stations and passes"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "tollstations": {
+        "type": "object",
+        "properties": {
+          "OpID": { "type": "string" },
+          "Operator": { "type": "string" },
+          "TollID": { "type": "string" },
+          "Name": { "type": "string" },
+          "PM": { "type": "string" },
+          "Locality": { "type": "string" },
+          "Road": { "type": "string" },
+          "Lat": { "type": "float" },
+          "Long": { "type": "float" },
+          "Email": { "type": "string" },
+          "Price1": { "type": "float" },
+          "Price2": { "type": "float" },
+          "Price3": { "type": "float" },
+          "Price4": { "type": "float" }
+        }
+      },
+      "TollPass": {
+        "type": "object",
+        "properties": {
+          "timestamp": { "type": "date" },
+          "tollID": { "type": "string" },
+          "tagRef": { "type": "string" },
+          "tagHomeID": { "type": "string" },
+          "charge": { "type": "string" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "username": { "type": "string" },
+          "password": { "type": "string" },
+          "role": { "type": "string" }
+        }
+      },
+      "healthcheck_return": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string" },
+          "dbconnection": { "type": "string" },
+          "n_stations": { "type": "integer" },
+          "n_tags": { "type": "integer" },
+          "n_passes": { "type": "integer" }
+        }
+      },
+      "getstations_return": {
+        "type": "object",
+        "properties": {
+          "total_stations": { "type": "integer" },
+          "stations": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/tollstations"
+            }
+          }
+        }
+      },
+      "resetstations_return": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string" },
+          "info": { "type": "string" }
+        }
+      },
+      "addpasses_return": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string" },
+          "info": { "type": "string" }
+        }
+      },
+      "resetpasses_return": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string" },
+          "info": { "type": "string" }
+        }
+      },
+      "register_return": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string" },
+          "info": { "type": "string" }
+        }
+      },
+      "login_return": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string" },
+          "info": { "type": "string" },
+          "token": { "type": "string" }
+        },
+        "required": ["status", "info"]
+      },
+      "logout_return": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string" },
+          "info": { "type": "string" }
+        },
+        "required": ["status", "info"]
+      },
+      "charges_by_return": {
+        "type": "object",
+        "properties": {
+          "tollOpID": { "type": "string" },
+          "requestTimestamp": { "type": "string", "format": "date-time" },
+          "periodFrom": { "type": "string", "format": "date-time" },
+          "periodTo": { "type": "string", "format": "date-time" },
+          "vOpList": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "visitingOpID": { "type": "string" },
+                "nPasses": { "type": "integer" },
+                "passesCost": { "type": "number", "format": "float" }
+              },
+              "required": ["visitingOpID", "nPasses", "passesCost"]
+            }
+          }
+        },
+        "required": [
+          "tollOpID",
+          "requestTimestamp",
+          "periodFrom",
+          "periodTo",
+          "vOpList"
+        ]
+      },
+      "pass_analysis_return": {
+        "type": "object",
+        "properties": {
+          "stationOpID": { "type": "string" },
+          "tagOpID": { "type": "string" },
+          "requestTimestamp": { "type": "string", "format": "date-time" },
+          "periodFrom": { "type": "string", "format": "date-time" },
+          "periodTo": { "type": "string", "format": "date-time" },
+          "nPasses": { "type": "integer" },
+          "passList": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "passIndex": { "type": "integer" },
+                "passID": { "type": "integer" },
+                "stationID": { "type": "string" },
+                "timestamp": { "type": "string", "format": "date-time" },
+                "tagID": { "type": "string" },
+                "passCharge": { "type": "number", "format": "float" }
+              },
+              "required": [
+                "passIndex",
+                "passID",
+                "stationID",
+                "timestamp",
+                "tagID",
+                "passCharge"
+              ]
+            }
+          }
+        },
+        "required": [
+          "stationOpID",
+          "tagOpID",
+          "requestTimestamp",
+          "periodFrom",
+          "periodTo",
+          "nPasses",
+          "passList"
+        ]
+      },
+      "passes_cost_return": {
+        "type": "object",
+        "properties": {
+          "tollOpID": { "type": "string" },
+          "tagOpID": { "type": "string" },
+          "requestTimestamp": { "type": "string", "format": "date-time" },
+          "periodFrom": { "type": "string", "format": "date-time" },
+          "periodTo": { "type": "string", "format": "date-time" },
+          "nPasses": { "type": "integer" },
+          "passesCost": { "type": "number", "format": "float" }
+        },
+        "required": [
+          "tollOpID",
+          "tagOpID",
+          "requestTimestamp",
+          "periodFrom",
+          "periodTo",
+          "nPasses",
+          "passesCost"
+        ]
+      },
+      "tollstation_passes_return": {
+        "type": "object",
+        "properties": {
+          "stationID": { "type": "string" },
+          "stationOperator": { "type": "string" },
+          "requestTimestamp": { "type": "string", "format": "date-time" },
+          "periodFrom": { "type": "string", "format": "date-time" },
+          "periodTo": { "type": "string", "format": "date-time" },
+          "nPasses": { "type": "integer" },
+          "passList": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "passIndex": { "type": "integer" },
+                "passID": { "type": "string" },
+                "timestamp": { "type": "string", "format": "date-time" },
+                "tagID": { "type": "string" },
+                "tagProvider": { "type": "string" },
+                "passType": { "type": "string" },
+                "passCharge": { "type": "number", "format": "float" }
+              },
+              "required": [
+                "passIndex",
+                "passID",
+                "timestamp",
+                "tagID",
+                "tagProvider",
+                "passType",
+                "passCharge"
+              ]
+            }
+          }
+        },
+        "required": [
+          "stationID",
+          "stationOperator",
+          "requestTimestamp",
+          "periodFrom",
+          "periodTo",
+          "nPasses",
+          "passList"
+        ]
+      }
+    }
+  },
+  "paths": {
+    "/api/admin/healthcheck": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Healthcheck",
+        "description": "Performs a healthcheck with the mongodb database. Returns the status of the connection with the database, the total unique number of tollstations, tags, and passes.",
+        "operationId": "healthcheck",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "dbconnection": {
+                      "type": "string"
+                    },
+                    "n_stations": {
+                      "type": "integer"
+                    },
+                    "n_tags": {
+                      "type": "integer"
+                    },
+                    "n_passes": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "dbconnection": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "admin_auth": ["read:admin"]
+          }
+        ]
+      }
+    },
+    "/api/admin/getstations": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "Get Toll Stations",
+        "description": "Returns a JSON with all the toll stations information.",
+        "operationId": "getstations",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total_stations": {
+                      "type": "integer"
+                    },
+                    "stations": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/tollstations"
+                      }
+                    }
+                  }
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "admin_auth": ["read:admin"]
+          }
+        ]
+      }
+    },
+    "/api/admin/resetstations": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Reset Toll Stations",
+        "description": "Deletes every object from tollstations and fills the tollstations object with the new data.",
+        "operationId": "resetstations",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/tollstations"
+                }
+              }
+            },
+            "text/csv": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "admin_auth": ["write:admin"]
+          }
+        ]
+      }
+    },
+    "/api/admin/addpasses": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Add Passes",
+        "description": "Adds the passed passes to the database.",
+        "operationId": "addpasses",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TollPass"
+                }
+              }
+            },
+            "text/csv": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "admin_auth": ["write:admin"]
+          }
+        ]
+      }
+    },
+    "/api/admin/resetpasses": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "Reset Passes",
+        "description": "Deletes every object from passes.",
+        "operationId": "resetpasses",
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "admin_auth": ["write:admin"]
+          }
+        ]
+      }
+    },
+    "/api/register": {
+      "post": {
+        "tags": ["login system"],
+        "summary": "Register new users",
+        "description": "Register new users by accepting CSV or JSON data with support for multiple users.",
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            },
+            "text/csv": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully registered users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data format",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "admin_auth": ["write:admin"]
+          }
+        ]
+      }
+    },
+    "/api/login": {
+      "post": {
+        "tags": ["login system"],
+        "summary": "Login a user",
+        "description": "Login a user by accepting JSON or CSV data with username and password.",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  }
+                },
+                "required": ["username", "password"]
+              }
+            },
+            "text/csv": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid data format or columns",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid credentials or already logged in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/logout": {
+      "post": {
+        "tags": ["login system"],
+        "summary": "Logout a user",
+        "description": "Logout a user by invalidating the token.",
+        "operationId": "logout",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "description": "The authentication token of the user to log out"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successfully logged out",
+            "content": {}
+          },
+          "400": {
+            "description": "Token missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid or already logged out token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/chargesBy/{tollOpID}/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["toll/passes analysis"],
+        "summary": "Get charges by visiting operators",
+        "description": "Returns a JSON with data about the passes that happened from users with a different tagOpID than tollOpID.",
+        "operationId": "charges_by",
+        "parameters": [
+          {
+            "name": "tollOpID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The toll operator ID"
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{8}$",
+              "description": "Starting date of the search in YYYYMMDD format"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{8}$",
+              "description": "Ending date of the search in YYYYMMDD format"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["json", "csv"],
+              "default": "json",
+              "description": "The desired response format, either 'json' or 'csv'. Defaults to 'json'."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved charges data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tollOpID": {
+                      "type": "string",
+                      "description": "The toll operator ID"
+                    },
+                    "requestTimestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The timestamp of the request"
+                    },
+                    "periodFrom": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The start date of the period"
+                    },
+                    "periodTo": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The end date of the period"
+                    },
+                    "vOpList": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "visitingOpID": {
+                            "type": "string",
+                            "description": "The visiting operator ID"
+                          },
+                          "nPasses": {
+                            "type": "integer",
+                            "description": "Number of passes made by the visiting operator"
+                          },
+                          "passesCost": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "Total cost of the passes made by the visiting operator"
+                          }
+                        }
+                      },
+                      "description": "List of visiting operators and their respective pass data"
+                    }
+                  }
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "description": "CSV format output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/passAnalysis/{stationOpID}/{tagOpID}/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["toll/passes analysis"],
+        "summary": "Get pass analysis data",
+        "description": "Returns a JSON with data about the total passes within the specified period for the given station and tag operator IDs.",
+        "operationId": "pass_analysis",
+        "parameters": [
+          {
+            "name": "stationOpID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The station operator ID"
+            }
+          },
+          {
+            "name": "tagOpID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The tag operator ID"
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{8}$",
+              "description": "Starting date of the search in YYYYMMDD format"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{8}$",
+              "description": "Ending date of the search in YYYYMMDD format"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["json", "csv"],
+              "default": "json",
+              "description": "The desired response format, either 'json' or 'csv'. Defaults to 'json'."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved pass analysis data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "stationOpID": {
+                      "type": "string",
+                      "description": "The station operator ID"
+                    },
+                    "tagOpID": {
+                      "type": "string",
+                      "description": "The tag operator ID"
+                    },
+                    "requestTimestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The timestamp of the request"
+                    },
+                    "periodFrom": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The start date of the period"
+                    },
+                    "periodTo": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The end date of the period"
+                    },
+                    "nPasses": {
+                      "type": "integer",
+                      "description": "The number of passes found within the period"
+                    },
+                    "passList": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "passCharge": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "The charge of the pass"
+                          }
+                        }
+                      },
+                      "description": "List of passes with their charges within the specified period"
+                    }
+                  }
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "description": "CSV format output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tollStationPasses/{tollStationID}/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["toll/passes analysis"],
+        "summary": "Get toll station pass data",
+        "description": "Returns a JSON with data about the toll station passes for the given toll station ID between the specified dates.",
+        "operationId": "toll_station_passes",
+        "parameters": [
+          {
+            "name": "tollStationID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The ID of the toll station"
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{8}$",
+              "description": "Starting date of the search in YYYYMMDD format"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{8}$",
+              "description": "Ending date of the search in YYYYMMDD format"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["json", "csv"],
+              "default": "json",
+              "description": "The desired response format, either 'json' or 'csv'. Defaults to 'json'."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved toll station pass data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "stationID": {
+                      "type": "string",
+                      "description": "The toll station ID"
+                    },
+                    "stationOperator": {
+                      "type": "string",
+                      "description": "The operator of the toll station"
+                    },
+                    "requestTimestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The timestamp of the request"
+                    },
+                    "periodFrom": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The start date of the period"
+                    },
+                    "periodTo": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The end date of the period"
+                    },
+                    "nPasses": {
+                      "type": "integer",
+                      "description": "The number of passes found within the period"
+                    },
+                    "passList": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "passCharge": {
+                            "type": "number",
+                            "format": "float",
+                            "description": "The charge of the pass"
+                          }
+                        }
+                      },
+                      "description": "List of passes with their charges within the specified period"
+                    }
+                  }
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "description": "CSV format output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/passesCost/{tollOpID}/{tagOpID}/{date_from}/{date_to}": {
+      "get": {
+        "tags": ["toll/passes analysis"],
+        "summary": "Get passes cost data",
+        "description": "Returns a JSON with the total cost of passes for the given toll operator and tag operator within the specified date range.",
+        "operationId": "passes_cost",
+        "parameters": [
+          {
+            "name": "tollOpID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The toll operator ID"
+            }
+          },
+          {
+            "name": "tagOpID",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "The tag operator ID"
+            }
+          },
+          {
+            "name": "date_from",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{8}$",
+              "description": "Starting date of the search in YYYYMMDD format"
+            }
+          },
+          {
+            "name": "date_to",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[0-9]{8}$",
+              "description": "Ending date of the search in YYYYMMDD format"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["json", "csv"],
+              "default": "json",
+              "description": "The desired response format, either 'json' or 'csv'. Defaults to 'json'."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved passes cost data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tollOpID": {
+                      "type": "string",
+                      "description": "The toll operator ID"
+                    },
+                    "tagOpID": {
+                      "type": "string",
+                      "description": "The tag operator ID"
+                    },
+                    "requestTimestamp": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The timestamp of the request"
+                    },
+                    "periodFrom": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The start date of the period"
+                    },
+                    "periodTo": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "The end date of the period"
+                    },
+                    "nPasses": {
+                      "type": "integer",
+                      "description": "The number of passes found within the period"
+                    },
+                    "passesCost": {
+                      "type": "number",
+                      "format": "float",
+                      "description": "The total cost of passes within the specified period"
+                    }
+                  }
+                }
+              },
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "description": "CSV format output"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    },
+                    "info": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
